@@ -18,6 +18,9 @@ CS_SUBSCRIPTION_KEY = '0000000000000000000000000000'
 # Event Grid key
 EVENT_GRID_KEY = '0000000000000000000000000000'
 # HDInsight tests
+#  replace CLIENT_OID with your own service principal's id
+#  which can be got by powershell: Get-AzADServicePrincipal -ApplicationId {service principal's client id}
+CLIENT_OID = '00000000-0000-0000-0000-000000000000'
 HDI_ADLS_ACCOUNT_NAME = 'fakehdiadlsaccount'
 HDI_ADLS_CLIENT_ID = '00000000-0000-0000-0000-000000000000'
 
