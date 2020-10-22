@@ -44,11 +44,13 @@ class KeyVaultPreparer(AzureMgmtPreparer):
                  resource_group_parameter_name=RESOURCE_GROUP_PARAM,
                  disable_recording=True,
                  playback_fake_resource=None,
-                 client_kwargs=None):
+                 client_kwargs=None,
+                 random_name_enabled=False):
         super(KeyVaultPreparer, self).__init__(name_prefix, 24,
                                                disable_recording=disable_recording,
                                                playback_fake_resource=playback_fake_resource,
-                                               client_kwargs=client_kwargs)
+                                               client_kwargs=client_kwargs,
+                                               random_name_enabled=random_name_enabled)
         self.sku = sku or DEFAULT_SKU
         self.permissions = permissions or DEFAULT_PERMISSIONS
         self.enabled_for_deployment = enabled_for_deployment
@@ -60,6 +62,8 @@ class KeyVaultPreparer(AzureMgmtPreparer):
         self.parameter_name = parameter_name
         self.creds_parameter = 'credentials'
         self.parameter_name_for_location = 'location'
+        if self.random_name_enabled:
+            self.resource_moniker = self.name_prefix + "vault"
         self.client_oid = None
 
     def _get_resource_group(self, **kwargs):
@@ -93,6 +97,10 @@ class KeyVaultPreparer(AzureMgmtPreparer):
             parameters = VaultCreateOrUpdateParameters(location=self.location,
                                                        properties=properties)
             self.resource = self.client.vaults.create_or_update(group, name, parameters).result()
+            self.test_class_instance.scrubber.register_name_pair(
+                name,
+                self.moniker
+            )
         else:
             properties.vault_uri = 'https://{}.vault.azure.net/'.format(name)
             self.resource = FakeVault(name=name, location=self.location, properties=properties)
